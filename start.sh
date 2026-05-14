@@ -113,9 +113,15 @@ for i in $(seq 1 20); do
   sleep 1
 done
 
-# Seed bcrypt passwords (needs running backend)
-echo -e "${YELLOW}Seeding user passwords...${NC}"
-curl -s -X POST "http://localhost:${BACKEND_PORT}/api/auth/seed-password" > /dev/null 2>&1 || true
+# Seed bcrypt passwords via psql directly (seed-password route now requires auth)
+echo -e "${YELLOW}Seeding user passwords directly via psql...${NC}"
+ADMIN_HASH=$(node -e "const b=require('bcryptjs');b.hash('admin123',12).then(h=>process.stdout.write(h))" 2>/dev/null || echo "")
+MANAGER_HASH=$(node -e "const b=require('bcryptjs');b.hash('manager123',12).then(h=>process.stdout.write(h))" 2>/dev/null || echo "")
+if [ -n "$ADMIN_HASH" ] && [ -n "$MANAGER_HASH" ]; then
+  psql -h "${DB_HOST:-localhost}" -p "${DB_PORT:-5432}" -U "${DB_USER:-postgres}" -d "${DB_NAME:-homehealth}" \
+    -c "UPDATE users SET password='$ADMIN_HASH' WHERE email='admin@homehealth.com'; UPDATE users SET password='$MANAGER_HASH' WHERE email='manager@homehealth.com';" \
+    -q 2>/dev/null || true
+fi
 
 # Start frontend with hot reload (Vite) - use --strictPort so it doesn't pick a random port
 echo -e "${GREEN}Starting frontend on port ${FRONTEND_PORT} (with hot reload)...${NC}"

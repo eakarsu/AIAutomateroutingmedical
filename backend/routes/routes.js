@@ -1,15 +1,37 @@
 import { Router } from 'express';
+import { z } from 'zod';
+
 const router = Router();
 
+const routeSchema = z.object({
+  nurse_id: z.coerce.number().int().positive('nurse_id required'),
+  route_date: z.string().min(1, 'route_date required'),
+  status: z.enum(['planned', 'in_progress', 'completed', 'cancelled']).optional().default('planned'),
+  total_distance: z.coerce.number().optional(),
+  total_duration: z.coerce.number().int().optional(),
+  optimization_score: z.coerce.number().optional(),
+});
+
+// Get all routes — paginated
 router.get('/', async (req, res) => {
   try {
     const db = req.app.locals.db;
-    const result = await db.query(`
-      SELECT r.*, n.first_name, n.last_name,
-             (SELECT COUNT(*) FROM route_stops rs WHERE rs.route_id = r.id) as stop_count
-      FROM routes r LEFT JOIN nurses n ON r.nurse_id = n.id ORDER BY r.route_date DESC, r.id
-    `);
-    res.json(result.rows);
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const offset = (page - 1) * limit;
+
+    const [rows, count] = await Promise.all([
+      db.query(
+        `SELECT r.*, n.first_name, n.last_name,
+                (SELECT COUNT(*) FROM route_stops rs WHERE rs.route_id = r.id) as stop_count
+         FROM routes r LEFT JOIN nurses n ON r.nurse_id = n.id ORDER BY r.route_date DESC, r.id LIMIT $1 OFFSET $2`,
+        [limit, offset]
+      ),
+      db.query('SELECT COUNT(*) FROM routes'),
+    ]);
+
+    const total = parseInt(count.rows[0].count);
+    res.json({ data: rows.rows, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -35,12 +57,15 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
+    const parsed = routeSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'Validation failed', details: parsed.error.issues });
+
     const db = req.app.locals.db;
-    const { nurse_id, route_date, status, total_distance, total_duration, optimization_score } = req.body;
+    const { nurse_id, route_date, status, total_distance, total_duration, optimization_score } = parsed.data;
     const result = await db.query(
       `INSERT INTO routes (nurse_id, route_date, status, total_distance, total_duration, optimization_score)
        VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-      [nurse_id, route_date, status || 'planned', total_distance, total_duration, optimization_score]
+      [nurse_id, route_date, status, total_distance, total_duration, optimization_score]
     );
     res.json(result.rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -48,10 +73,16 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
+    const parsed = routeSchema.partial().safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'Validation failed', details: parsed.error.issues });
+
     const db = req.app.locals.db;
-    const { nurse_id, route_date, status, total_distance, total_duration, optimization_score } = req.body;
+    const { nurse_id, route_date, status, total_distance, total_duration, optimization_score } = parsed.data;
     const result = await db.query(
-      `UPDATE routes SET nurse_id=$1, route_date=$2, status=$3, total_distance=$4, total_duration=$5, optimization_score=$6
+      `UPDATE routes SET
+         nurse_id=COALESCE($1,nurse_id), route_date=COALESCE($2,route_date), status=COALESCE($3,status),
+         total_distance=COALESCE($4,total_distance), total_duration=COALESCE($5,total_duration),
+         optimization_score=COALESCE($6,optimization_score)
        WHERE id=$7 RETURNING *`,
       [nurse_id, route_date, status, total_distance, total_duration, optimization_score, req.params.id]
     );

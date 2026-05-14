@@ -18,13 +18,26 @@ import AIRiskAssessment from './pages/AIRiskAssessment';
 import AIChat from './pages/AIChat';
 import VisitNotes from './pages/VisitNotes';
 import AILogs from './pages/AILogs';
+// Analytics + 8 NEW custom features
+import Analytics from './pages/Analytics';
+import AITrafficAdjust from './pages/AITrafficAdjust';
+import AIAcuityAlert from './pages/AIAcuityAlert';
+import AIMedicationCheck from './pages/AIMedicationCheck';
+import AISkillMatch from './pages/AISkillMatch';
+import AIOutcomePredict from './pages/AIOutcomePredict';
+import AIFamilyPortal from './pages/AIFamilyPortal';
+import AIShiftSwap from './pages/AIShiftSwap';
+import AIPreauth from './pages/AIPreauth';
+import AINoShowPredict from './pages/AINoShowPredict';
+import Integrations from './pages/Integrations';
 import { api } from './api';
 
 function ProtectedLayout() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    api.getNotifications().then(notifs => {
+    api.getNotifications().then(result => {
+      const notifs = Array.isArray(result) ? result : (result.data || []);
       setUnreadCount(notifs.filter(n => !n.is_read).length);
     }).catch(() => {});
   }, []);
@@ -43,6 +56,8 @@ function ProtectedLayout() {
           <Route path="/routes" element={<RoutesPage />} />
           <Route path="/visit-notes" element={<VisitNotes />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/analytics" element={<Analytics />} />
+          {/* Existing AI tools */}
           <Route path="/ai/route-optimizer" element={<AIRouteOptimizer />} />
           <Route path="/ai/order-processor" element={<AIOrderProcessor />} />
           <Route path="/ai/visit-notes" element={<AIVisitNotes />} />
@@ -50,6 +65,17 @@ function ProtectedLayout() {
           <Route path="/ai/risk-assessment" element={<AIRiskAssessment />} />
           <Route path="/ai/chat" element={<AIChat />} />
           <Route path="/ai/logs" element={<AILogs />} />
+          {/* 8 NEW custom features */}
+          <Route path="/ai/traffic-adjust" element={<AITrafficAdjust />} />
+          <Route path="/ai/acuity-alert" element={<AIAcuityAlert />} />
+          <Route path="/ai/medication-check" element={<AIMedicationCheck />} />
+          <Route path="/ai/skill-match" element={<AISkillMatch />} />
+          <Route path="/ai/outcome-predict" element={<AIOutcomePredict />} />
+          <Route path="/ai/family-portal" element={<AIFamilyPortal />} />
+          <Route path="/ai/shift-swap" element={<AIShiftSwap />} />
+          <Route path="/ai/preauth" element={<AIPreauth />} />
+          <Route path="/ai/no-show-predict" element={<AINoShowPredict />} />
+          <Route path="/integrations" element={<Integrations />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
       </main>

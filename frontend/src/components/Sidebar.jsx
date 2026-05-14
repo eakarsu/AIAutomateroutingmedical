@@ -1,12 +1,15 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Users, UserCheck, CalendarDays, FileText,
-  MapPin, Clock, Sparkles, Bell, MessageSquare, LogOut, ClipboardList, History
+  MapPin, Clock, Sparkles, Bell, MessageSquare, LogOut, ClipboardList, History,
+  TrafficCone, AlertTriangle, Pill, Activity, Mail, ArrowRightLeft, ShieldCheck, BarChart3,
+  CalendarX,
 } from 'lucide-react';
 
 const navItems = [
   { section: 'Overview', items: [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/analytics', label: 'Analytics', icon: BarChart3 },
   ]},
   { section: 'Management', items: [
     { path: '/nurses', label: 'Nurses', icon: UserCheck },
@@ -25,6 +28,17 @@ const navItems = [
     { path: '/ai/risk-assessment', label: 'Risk Assessment', icon: Users },
     { path: '/ai/chat', label: 'AI Assistant', icon: MessageSquare },
     { path: '/ai/logs', label: 'AI Logs', icon: History },
+  ]},
+  { section: 'Advanced AI', items: [
+    { path: '/ai/traffic-adjust', label: 'Traffic Adjust', icon: TrafficCone },
+    { path: '/ai/acuity-alert', label: 'Acuity Alerts', icon: AlertTriangle },
+    { path: '/ai/medication-check', label: 'Med Interactions', icon: Pill },
+    { path: '/ai/skill-match', label: 'Skill Matching', icon: Sparkles },
+    { path: '/ai/outcome-predict', label: 'Outcome Predict', icon: Activity },
+    { path: '/ai/family-portal', label: 'Family Portal', icon: Mail },
+    { path: '/ai/shift-swap', label: 'Shift Swaps', icon: ArrowRightLeft },
+    { path: '/ai/preauth', label: 'Pre-Auth', icon: ShieldCheck },
+    { path: '/ai/no-show-predict', label: 'No-Show Predict', icon: CalendarX },
   ]},
   { section: 'System', items: [
     { path: '/notifications', label: 'Notifications', icon: Bell, badge: true },
