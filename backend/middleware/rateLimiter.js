@@ -1,10 +1,11 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 // AI endpoints: 20 requests per user per hour
 export const aiRateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
-  keyGenerator: (req) => (req.user ? String(req.user.id || req.user.email) : req.ip),
+  keyGenerator: (req, res) =>
+    req.user ? String(req.user.id || req.user.email) : ipKeyGenerator(req, res),
   message: { error: 'Too many AI requests. Limit is 20 per hour.' },
   standardHeaders: true,
   legacyHeaders: false,

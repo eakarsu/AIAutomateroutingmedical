@@ -80,25 +80,14 @@ app.use('/api/analytics', authenticate, analyticsRoutes);
 app.use('/api/ai-features', authenticate, aiRateLimiter, aiFeaturesRoutes);
 app.use('/api/integrations', authenticate, integrationsRoutes);
 
+// Custom Views (4 routing-focused features) — mounted BEFORE app.listen
+import customViewsRoutes from './routes/customViews.js';
+app.use('/api/custom-views', authenticate, customViewsRoutes);
+
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);
   startVisitReminderScheduler(pool);
 });
 
-// BATCH_00_AUDIT_MOUNTS
-app.use('/api/traffic-route', require('./routes/trafficRoute'));
-app.use('/api/patient-risk-stream', require('./routes/patientRiskStream'));
-app.use('/api/caregiver-assist', require('./routes/caregiverAssist'));
-app.use('/api/outcome-predict', require('./routes/outcomePredict'));
-app.use('/api/ehr-bridge', require('./routes/ehrBridge'));
-
-// === Batch 00 Gaps & Frontend Mounts ===
-app.use('/api/gap-ai-travel-time-optimization-real', require('./routes/gap_ai_travel_time_optimization_real'));
-app.use('/api/gap-limited-ai-show-prediction', require('./routes/gap_limited_ai_show_prediction'));
-app.use('/api/gap-ai-patient-outcome-deterioration-prediction', require('./routes/gap_ai_patient_outcome_deterioration_prediction'));
-app.use('/api/gap-ai-nurse-skill-matching-visit', require('./routes/gap_ai_nurse_skill_matching_visit'));
-app.use('/api/gap-live-ehr-integration-patient-history', require('./routes/gap_live_ehr_integration_patient_history'));
-app.use('/api/gap-limited-mobile-nurse-app-go', require('./routes/gap_limited_mobile_nurse_app_go'));
-app.use('/api/gap-telemedicine-video-capability', require('./routes/gap_telemedicine_video_capability'));
-app.use('/api/gap-caregiver-family-feedback-collection', require('./routes/gap_caregiver_family_feedback_collection'));
-app.use('/api/gap-outbound-webhooks', require('./routes/gap_outbound_webhooks'));
+// NOTE: prior CJS require() mounts removed — they were after app.listen()
+// (never executed) and `require` is not defined in ESM scope.

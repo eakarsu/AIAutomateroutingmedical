@@ -30,6 +30,7 @@ import AIShiftSwap from './pages/AIShiftSwap';
 import AIPreauth from './pages/AIPreauth';
 import AINoShowPredict from './pages/AINoShowPredict';
 import Integrations from './pages/Integrations';
+import CustomViewsPage from './pages/CustomViewsPage';
 import { api } from './api';
 
 function ProtectedLayout() {
@@ -76,6 +77,7 @@ function ProtectedLayout() {
           <Route path="/ai/preauth" element={<AIPreauth />} />
           <Route path="/ai/no-show-predict" element={<AINoShowPredict />} />
           <Route path="/integrations" element={<Integrations />} />
+          <Route path="/custom-views" element={<CustomViewsPage />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
       </main>

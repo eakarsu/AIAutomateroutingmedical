@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Users, UserCheck, CalendarDays, FileText,
   MapPin, Clock, Sparkles, Bell, MessageSquare, LogOut, ClipboardList, History,
   TrafficCone, AlertTriangle, Pill, Activity, Mail, ArrowRightLeft, ShieldCheck, BarChart3,
-  CalendarX,
+  CalendarX, Network,
 } from 'lucide-react';
 
 const navItems = [
@@ -39,6 +39,9 @@ const navItems = [
     { path: '/ai/shift-swap', label: 'Shift Swaps', icon: ArrowRightLeft },
     { path: '/ai/preauth', label: 'Pre-Auth', icon: ShieldCheck },
     { path: '/ai/no-show-predict', label: 'No-Show Predict', icon: CalendarX },
+  ]},
+  { section: 'Triage Views', items: [
+    { path: '/custom-views', label: 'Triage Views', icon: Network },
   ]},
   { section: 'System', items: [
     { path: '/notifications', label: 'Notifications', icon: Bell, badge: true },
