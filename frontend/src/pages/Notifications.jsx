@@ -20,7 +20,7 @@ const typeColors = {
 
 export default function Notifications() {
   const [items, setItems] = useState([]);
-  const load = () => api.getNotifications().then(setItems);
+  const load = () => api.getNotifications().then(data => setItems(Array.isArray(data) ? data : data));
   useEffect(() => { load(); }, []);
 
   const markRead = async (id) => {

@@ -172,3 +172,54 @@ CREATE TABLE ai_logs (
   tokens_used INTEGER,
   created_at TIMESTAMP DEFAULT NOW()
 );
+
+-- AI Results table (structured persisted outputs)
+CREATE TABLE ai_results (
+  id SERIAL PRIMARY KEY,
+  feature VARCHAR(100) NOT NULL,
+  entity_type VARCHAR(50),
+  entity_id INTEGER,
+  structured_data JSONB,
+  raw_content TEXT,
+  model VARCHAR(100),
+  tokens_used INTEGER,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Shift Swap Requests table
+CREATE TABLE IF NOT EXISTS shift_swap_requests (
+  id SERIAL PRIMARY KEY,
+  requester_nurse_id INTEGER REFERENCES nurses(id),
+  target_nurse_id INTEGER REFERENCES nurses(id),
+  shift_date DATE NOT NULL,
+  reason TEXT,
+  status VARCHAR(40) DEFAULT 'pending',
+  ai_recommendation TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Pre-Authorization Requests table
+CREATE TABLE IF NOT EXISTS preauth_requests (
+  id SERIAL PRIMARY KEY,
+  patient_id INTEGER REFERENCES patients(id),
+  order_id INTEGER REFERENCES medical_orders(id),
+  service_description TEXT,
+  insurance_provider VARCHAR(120),
+  auth_number VARCHAR(80),
+  status VARCHAR(40) DEFAULT 'pending',
+  submitted_at TIMESTAMP DEFAULT NOW(),
+  decision_at TIMESTAMP,
+  ai_summary TEXT,
+  notes TEXT
+);
+
+-- Family Messages table
+CREATE TABLE IF NOT EXISTS family_messages (
+  id SERIAL PRIMARY KEY,
+  patient_id INTEGER REFERENCES patients(id),
+  visit_id INTEGER REFERENCES visits(id),
+  summary TEXT,
+  sent_to VARCHAR(120),
+  sent_at TIMESTAMP DEFAULT NOW(),
+  created_by VARCHAR(120)
+);

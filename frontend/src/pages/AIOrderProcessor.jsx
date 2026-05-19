@@ -10,7 +10,7 @@ export default function AIOrderProcessor() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { api.getOrders().then(setOrders); }, []);
+  useEffect(() => { api.getOrders().then(data => setOrders(Array.isArray(data) ? data : data)); }, []);
 
   const process = async () => {
     if (!orderId) return toast.error('Select an order');
@@ -54,7 +54,7 @@ export default function AIOrderProcessor() {
             <Sparkles size={16} /> {loading ? 'Processing...' : 'Process with AI'}
           </button>
         </div>
-        <AIOutput content={result?.content} model={result?.model} tokens={result?.tokens} loading={loading} />
+        <AIOutput content={result?.content} structured={result?.structured} model={result?.model} tokens={result?.tokens} loading={loading} />
       </div>
     </>
   );

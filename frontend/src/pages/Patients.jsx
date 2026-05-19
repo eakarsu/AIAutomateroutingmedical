@@ -97,7 +97,7 @@ export default function Patients() {
             <div className="detail-item"><span className="detail-label">Status</span><span className="detail-value"><span className={`badge badge-${selected.status}`}>{selected.status}</span></span></div>
             <div className="detail-item full-width"><span className="detail-label">Address</span><span className="detail-value">{selected.address}, {selected.city}, {selected.state} {selected.zip}</span></div>
           </div>
-          <AIOutput content={aiResult?.content} model={aiResult?.model} tokens={aiResult?.tokens} loading={aiLoading} />
+          <AIOutput content={aiResult?.content} structured={aiResult?.structured} model={aiResult?.model} tokens={aiResult?.tokens} loading={aiLoading} />
         </Modal>
       )}
 

@@ -33,7 +33,7 @@ export default function AIScheduler() {
             <Sparkles size={16} /> {loading ? 'Analyzing...' : 'Analyze Schedule'}
           </button>
         </div>
-        <AIOutput content={result?.content} model={result?.model} tokens={result?.tokens} loading={loading} />
+        <AIOutput content={result?.content} structured={result?.structured} model={result?.model} tokens={result?.tokens} loading={loading} />
       </div>
     </>
   );

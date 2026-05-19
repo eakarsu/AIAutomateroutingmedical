@@ -75,7 +75,7 @@ export default function AIRouteOptimizer() {
           </div>
         )}
 
-        <AIOutput content={result?.content} model={result?.model} tokens={result?.tokens} loading={loading} />
+        <AIOutput content={result?.content} structured={result?.structured} model={result?.model} tokens={result?.tokens} loading={loading} />
       </div>
     </>
   );

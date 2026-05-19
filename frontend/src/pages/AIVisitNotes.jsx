@@ -10,7 +10,7 @@ export default function AIVisitNotes() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { api.getVisits().then(setVisits); }, []);
+  useEffect(() => { api.getVisits().then(data => setVisits(Array.isArray(data) ? data : data)); }, []);
 
   const generate = async () => {
     if (!visitId) return toast.error('Select a visit');
@@ -54,7 +54,7 @@ export default function AIVisitNotes() {
             <Sparkles size={16} /> {loading ? 'Generating...' : 'Generate SOAP Notes'}
           </button>
         </div>
-        <AIOutput content={result?.content} model={result?.model} tokens={result?.tokens} loading={loading} />
+        <AIOutput content={result?.content} structured={result?.structured} model={result?.model} tokens={result?.tokens} loading={loading} />
       </div>
     </>
   );
