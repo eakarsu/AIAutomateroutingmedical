@@ -83,6 +83,8 @@ app.use('/api/integrations', authenticate, integrationsRoutes);
 // Custom Views (4 routing-focused features) — mounted BEFORE app.listen
 import customViewsRoutes from './routes/customViews.js';
 app.use('/api/custom-views', authenticate, customViewsRoutes);
+import credentialExpiryRoutes from './routes/caregiverCredentialExpiry.js';
+app.use('/api/caregiver-credential-expiry', authenticate, credentialExpiryRoutes);
 
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);

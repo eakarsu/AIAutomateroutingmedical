@@ -31,7 +31,13 @@ import AIPreauth from './pages/AIPreauth';
 import AINoShowPredict from './pages/AINoShowPredict';
 import Integrations from './pages/Integrations';
 import CustomViewsPage from './pages/CustomViewsPage';
+import CaregiverCredentialExpiry from './pages/CaregiverCredentialExpiry';
 import { api } from './api';
+
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
+
+import TimelineView from './pages/TimelineView';
 
 function ProtectedLayout() {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -48,6 +54,10 @@ function ProtectedLayout() {
       <Sidebar unreadCount={unreadCount} />
       <main className="main-content">
         <Routes>
+        <Route path="/insights/timeline" element={<TimelineView />} />
+        <Route path="/codex/custom-viz" element={<CodexCustomVizFeature />} />
+        <Route path="/codex/operations" element={<CodexOperationsFeature />} />
+
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/nurses" element={<Nurses />} />
           <Route path="/patients" element={<Patients />} />
@@ -78,6 +88,7 @@ function ProtectedLayout() {
           <Route path="/ai/no-show-predict" element={<AINoShowPredict />} />
           <Route path="/integrations" element={<Integrations />} />
           <Route path="/custom-views" element={<CustomViewsPage />} />
+          <Route path="/caregiver-credential-expiry" element={<CaregiverCredentialExpiry />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
       </main>
