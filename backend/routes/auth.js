@@ -2,7 +2,6 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
-import { authenticate } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -13,7 +12,7 @@ const loginSchema = z.object({
 
 const registerSchema = z.object({
   email: z.string().email('Valid email required'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z.string().min(12, 'Password must be at least 12 characters'),
   full_name: z.string().min(1, 'full_name required'),
 });
 
@@ -35,7 +34,7 @@ router.post('/login', async (req, res) => {
     }
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'change-me-in-production',
+      process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
     res.json({ token, user: { id: user.id, email: user.email, full_name: user.full_name, role: user.role } });
@@ -58,26 +57,10 @@ router.post('/register', async (req, res) => {
 
     const hashed = await bcrypt.hash(password, 12);
     const result = await db.query(
-      'INSERT INTO users (email, password, full_name) VALUES ($1, $2, $3) RETURNING id, email, full_name, role',
-      [email, hashed, full_name]
+      'INSERT INTO users (email, password, full_name, role) VALUES ($1, $2, $3, $4) RETURNING id, email, full_name, role',
+      [email, hashed, full_name, 'viewer']
     );
     res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Seed default admin password — PROTECTED: requires admin auth
-router.post('/seed-password', authenticate, async (req, res) => {
-  try {
-    if (req.user?.role !== 'admin') return res.status(403).json({ error: 'Admin role required' });
-
-    const db = req.app.locals.db;
-    const hashed = await bcrypt.hash('admin123', 12);
-    await db.query('UPDATE users SET password = $1 WHERE email = $2', [hashed, 'admin@homehealth.com']);
-    const hashed2 = await bcrypt.hash('manager123', 12);
-    await db.query('UPDATE users SET password = $1 WHERE email = $2', [hashed2, 'manager@homehealth.com']);
-    res.json({ message: 'Passwords seeded' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

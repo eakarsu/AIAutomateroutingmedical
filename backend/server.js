@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import pg from 'pg';
+import { fileURLToPath } from 'node:url';
 import authRoutes from './routes/auth.js';
 import nursesRoutes from './routes/nurses.js';
 import patientsRoutes from './routes/patients.js';
@@ -10,30 +11,24 @@ import visitsRoutes from './routes/visits.js';
 import ordersRoutes from './routes/orders.js';
 import schedulesRoutes from './routes/schedules.js';
 import routesRoutes from './routes/routes.js';
-import aiRoutes from './routes/ai.js';
 import notificationsRoutes from './routes/notifications.js';
 import dashboardRoutes from './routes/dashboard.js';
 import visitNotesRoutes from './routes/visitNotes.js';
 import analyticsRoutes from './routes/analytics.js';
-import aiFeaturesRoutes from './routes/aiFeatures.js';
-import integrationsRoutes from './routes/integrations.js';
 import { startVisitReminderScheduler } from './services/notificationService.js';
 import { authenticate } from './middleware/auth.js';
-import { aiRateLimiter, generalLimiter } from './middleware/rateLimiter.js';
+import { generalLimiter } from './middleware/rateLimiter.js';
+import { validateRuntime } from './config/runtime.js';
+import dispatchCasesRoutes from './routes/dispatchCases.js';
 
-dotenv.config({ path: '../.env' });
+dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)) });
+validateRuntime();
 
 const app = express();
 const PORT = process.env.BACKEND_PORT || 4000;
 
 // Database pool
-const pool = new pg.Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME || 'homehealth',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
-});
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 
 // Make pool available to routes
 app.locals.db = pool;
@@ -72,13 +67,11 @@ app.use('/api/visits', authenticate, visitsRoutes);
 app.use('/api/orders', authenticate, ordersRoutes);
 app.use('/api/schedules', authenticate, schedulesRoutes);
 app.use('/api/routes', authenticate, routesRoutes);
-app.use('/api/ai', authenticate, aiRateLimiter, aiRoutes);
 app.use('/api/notifications', authenticate, notificationsRoutes);
 app.use('/api/dashboard', authenticate, dashboardRoutes);
 app.use('/api/visit-notes', authenticate, visitNotesRoutes);
 app.use('/api/analytics', authenticate, analyticsRoutes);
-app.use('/api/ai-features', authenticate, aiRateLimiter, aiFeaturesRoutes);
-app.use('/api/integrations', authenticate, integrationsRoutes);
+app.use('/api/dispatch-cases', authenticate, dispatchCasesRoutes);
 
 // Custom Views (4 routing-focused features) — mounted BEFORE app.listen
 import customViewsRoutes from './routes/customViews.js';
@@ -88,7 +81,7 @@ app.use('/api/caregiver-credential-expiry', authenticate, credentialExpiryRoutes
 
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);
-  startVisitReminderScheduler(pool);
+  if (process.env.ENABLE_REMINDER_SCHEDULER === 'true') startVisitReminderScheduler(pool);
 });
 
 // NOTE: prior CJS require() mounts removed — they were after app.listen()
