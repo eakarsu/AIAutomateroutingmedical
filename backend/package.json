@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "create-admin": "node create-admin.js",
     "test": "node --test tests/*.test.js"
   },
   "dependencies": {
@@ -15,7 +16,7 @@
     "express-rate-limit": "^8.4.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^8.0.7",
+    "nodemailer": "^9.0.3",
     "pdfkit": "^0.18.0",
     "pg": "^8.13.0",
     "zod": "^4.4.2"

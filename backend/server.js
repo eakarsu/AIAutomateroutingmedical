@@ -20,6 +20,7 @@ import { authenticate } from './middleware/auth.js';
 import { generalLimiter } from './middleware/rateLimiter.js';
 import { validateRuntime } from './config/runtime.js';
 import dispatchCasesRoutes from './routes/dispatchCases.js';
+import runtimeAiRoutes from './routes/runtimeAi.js';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)) });
 validateRuntime();
@@ -72,6 +73,7 @@ app.use('/api/dashboard', authenticate, dashboardRoutes);
 app.use('/api/visit-notes', authenticate, visitNotesRoutes);
 app.use('/api/analytics', authenticate, analyticsRoutes);
 app.use('/api/dispatch-cases', authenticate, dispatchCasesRoutes);
+app.use('/api/runtime-ai', authenticate, runtimeAiRoutes);
 
 // Custom Views (4 routing-focused features) — mounted BEFORE app.listen
 import customViewsRoutes from './routes/customViews.js';

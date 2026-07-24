@@ -2,6 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
+import { authenticate } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -14,6 +15,19 @@ const registerSchema = z.object({
   email: z.string().email('Valid email required'),
   password: z.string().min(12, 'Password must be at least 12 characters'),
   full_name: z.string().min(1, 'full_name required'),
+});
+
+router.get('/me', authenticate, async (req, res) => {
+  try {
+    const result = await req.app.locals.db.query(
+      'SELECT id, email, full_name, role FROM users WHERE id = $1',
+      [req.user.id],
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    return res.json({ user: result.rows[0] });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
 });
 
 router.post('/login', async (req, res) => {
