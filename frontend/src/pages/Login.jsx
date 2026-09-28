@@ -48,7 +48,7 @@ export default function Login() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
           <button type="button" className="auto-fill-btn" onClick={autoFill}>
-            Quick Login (Auto-fill Credentials)
+            Auto Fill Demo Credentials
           </button>
         </form>
       </div>
