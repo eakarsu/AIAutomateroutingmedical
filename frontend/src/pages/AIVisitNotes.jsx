@@ -1,3 +1,4 @@
+import NativeAIPresets from '../components/NativeAIPresets';
 import { useState, useEffect } from 'react';
 import { api } from '../api';
 import AIOutput from '../components/AIOutput';
@@ -30,6 +31,7 @@ export default function AIVisitNotes() {
         <div><h2>AI Visit Notes Generator</h2><div className="page-header-sub">Generate professional SOAP notes</div></div>
       </div>
       <div className="page-body">
+        <NativeAIPresets disabled={loading} presets={['First available record','Next available record','Current record review'].map((label,index)=>({label,fill:()=>{const id=visitId || visits[index%visits.length]?.id;if(id)setVisitId(String(id));return id ? 'Example filled from accessible records. Review before generating.' : 'Select an actual available record before generating.';}}))} />
         <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)', marginBottom: 24 }}>
           <div className="form-group">
             <label>Select Visit</label>

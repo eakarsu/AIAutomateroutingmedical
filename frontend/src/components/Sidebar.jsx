@@ -1,3 +1,4 @@
+import AIReportLibrary from "./AIReportLibrary";
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Users, UserCheck, CalendarDays, FileText,
@@ -90,6 +91,6 @@ export default function Sidebar({ unreadCount }) {
           <span>Sign Out</span>
         </div>
       </div>
-    </aside>
+    <AIReportLibrary /></aside>
   );
 }

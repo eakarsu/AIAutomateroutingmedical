@@ -1,3 +1,5 @@
+
+import FullAIExamples, { useFullAIExamples } from "../components/FullAIExamples.jsx";
 import { useState, useEffect } from 'react';
 import { api } from '../api';
 import AIOutput from '../components/AIOutput';
@@ -5,6 +7,8 @@ import toast from 'react-hot-toast';
 import { Sparkles } from 'lucide-react';
 
 export default function AIOrderProcessor() {
+  const fullAIExamples = useFullAIExamples();
+
   const [orders, setOrders] = useState([]);
   const [orderId, setOrderId] = useState('');
   const [result, setResult] = useState(null);
@@ -25,7 +29,7 @@ export default function AIOrderProcessor() {
   const selectedOrder = orders.find(o => o.id === Number(orderId));
 
   return (
-    <>
+    <div data-full-ai-workspace="AIOrderProcessor"><FullAIExamples controller={fullAIExamples} disabled={Boolean(loading)} />
       <div className="page-header">
         <div><h2>AI Order Processor</h2><div className="page-header-sub">AI-powered medical order analysis</div></div>
       </div>
@@ -33,7 +37,7 @@ export default function AIOrderProcessor() {
         <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)', marginBottom: 24 }}>
           <div className="form-group">
             <label>Select Medical Order</label>
-            <select value={orderId} onChange={(e) => setOrderId(e.target.value)}>
+            <select value={orderId} onChange={(e) => setOrderId(e.target.value)} data-full-ai-field={fullAIExamples.bind({ current: orderId, change: (e) => setOrderId(e.target.value), label: "orderId", manual: false, json: false, sample: '' }, "p1-1394", undefined)}>
               <option value="">Choose an order...</option>
               {orders.map(o => (
                 <option key={o.id} value={o.id}>
@@ -56,6 +60,6 @@ export default function AIOrderProcessor() {
         </div>
         <AIOutput content={result?.content} structured={result?.structured} model={result?.model} tokens={result?.tokens} loading={loading} />
       </div>
-    </>
+    </div>
   );
 }

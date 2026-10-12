@@ -1,3 +1,7 @@
+import { authenticate as aiWorkspaceDependency1 } from "./middleware/auth.js";
+import aiWorkspaceDependency2 from "./aiWorkspaceAdapters.cjs";
+import aiWorkspaceDependency3 from "./aiWorkspace.cjs";
+import { readFileSync as readAIWorkspaceFile } from 'node:fs';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -81,6 +85,15 @@ app.use('/api/custom-views', authenticate, customViewsRoutes);
 import credentialExpiryRoutes from './routes/caregiverCredentialExpiry.js';
 app.use('/api/caregiver-credential-expiry', authenticate, credentialExpiryRoutes);
 
+
+// Advisory AI reports only; native execution and approval routes stay unchanged.
+const aiWorkspaceSupport = aiWorkspaceDependency2;
+const aiWorkspaceFeatures = JSON.parse(readAIWorkspaceFile(new URL("./aiWorkspaceFeatures.json", import.meta.url), 'utf8'));
+const aiWorkspaceDatabase = pool;
+app.use('/api/report-workspace', aiWorkspaceDependency3.createAIWorkspaceRouter({
+  pool: aiWorkspaceDatabase, authenticateToken: aiWorkspaceDependency1,
+  aiRateLimiter: aiWorkspaceSupport.createWorkspaceLimiter(), features: aiWorkspaceFeatures,
+}));
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);
   if (process.env.ENABLE_REMINDER_SCHEDULER === 'true') startVisitReminderScheduler(pool);

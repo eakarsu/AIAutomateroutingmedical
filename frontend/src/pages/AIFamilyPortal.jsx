@@ -1,3 +1,5 @@
+import AIReport from '../components/AIReport';
+import NativeAIPresets from '../components/NativeAIPresets';
 import { useState, useEffect } from 'react';
 import { api } from '../api';
 import toast from 'react-hot-toast';
@@ -37,6 +39,7 @@ export default function AIFamilyPortal() {
         <div><h2>Family Communication Portal</h2><div className="page-header-sub">Generate simplified visit summaries for patient families</div></div>
       </div>
       <div className="page-body">
+        <NativeAIPresets disabled={loading} presets={['First available record','Next available record','Current record review'].map((label,index)=>({label,fill:()=>{const id=visitId || visits[index%visits.length]?.id;if(id)setVisitId(String(id));setSendTo(sendTo || 'family@example.com');return id ? 'Example filled from accessible records. Review before generating.' : 'Select an actual available record before generating.';}}))} />
         <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)', marginBottom: 24 }}>
           <div className="form-group"><label>Visit</label>
             <select value={visitId} onChange={(e) => setVisitId(e.target.value)}>
@@ -56,7 +59,7 @@ export default function AIFamilyPortal() {
           <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)', marginBottom: 24 }}>
             <h3>{result.patient} - Visit on {result.visit_date}</h3>
             <div style={{ padding: 16, background: '#f8fafc', borderRadius: 6, marginTop: 12, whiteSpace: 'pre-wrap' }}>
-              {result.family_summary}
+              <AIReport response={result.family_summary} title="Family summary" />
             </div>
             {result.sent_to && <p style={{ color: '#10b981', marginTop: 12 }}><Mail size={14} style={{ verticalAlign: 'middle', marginRight: 6 }} />Sent to {result.sent_to}</p>}
           </div>
@@ -72,7 +75,7 @@ export default function AIFamilyPortal() {
                   <td>{new Date(m.sent_at).toLocaleString()}</td>
                   <td>{m.first_name} {m.last_name}</td>
                   <td>{m.sent_to}</td>
-                  <td style={{ maxWidth: 400, fontSize: 12 }}>{(m.summary || '').slice(0, 200)}...</td>
+                  <td style={{ maxWidth: 400, fontSize: 12 }}><AIReport response={m.summary} title="Saved family summary" /></td>
                 </tr>
               ))}</tbody>
             </table>

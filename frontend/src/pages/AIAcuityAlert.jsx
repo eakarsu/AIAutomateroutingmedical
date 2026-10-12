@@ -1,3 +1,5 @@
+import AIReport from '../components/AIReport';
+import NativeAIPresets from '../components/NativeAIPresets';
 import { useState, useEffect } from 'react';
 import { api } from '../api';
 import AIOutput from '../components/AIOutput';
@@ -30,6 +32,7 @@ export default function AIAcuityAlert() {
         <div><h2>Patient Acuity Alerting</h2><div className="page-header-sub">AI scans visit notes for deterioration signals</div></div>
       </div>
       <div className="page-body">
+        <NativeAIPresets disabled={loading} presets={['First available record','Next available record','Current record review'].map((label,index)=>({label,fill:()=>{const id=patientId || patients[index%patients.length]?.id;if(id)setPatientId(String(id));return id ? 'Example filled from accessible records. Review before generating.' : 'Select an actual available record before generating.';}}))} />
         <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)', marginBottom: 24 }}>
           <div className="form-group"><label>Patient</label>
             <select value={patientId} onChange={(e) => setPatientId(e.target.value)}>
@@ -42,6 +45,7 @@ export default function AIAcuityAlert() {
           </button>
         </div>
 
+        {result && <AIReport response={result} title="AI analysis report" />}
         {result && (
           <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)', marginBottom: 24 }}>
             <h3>{result.patient_name}</h3>

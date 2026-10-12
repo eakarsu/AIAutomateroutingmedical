@@ -1,3 +1,4 @@
+import NativeAIPresets from '../components/NativeAIPresets';
 import { useState, useEffect } from 'react';
 import { api } from '../api';
 import AIOutput from '../components/AIOutput';
@@ -29,6 +30,7 @@ export default function AIRouteOptimizer() {
         <div><h2>AI Route Optimizer</h2><div className="page-header-sub">Optimize nurse routes using AI</div></div>
       </div>
       <div className="page-body">
+        <NativeAIPresets disabled={loading} presets={['First available record','Next available record','Current record review'].map((label,index)=>({label,fill:()=>{const available=nurses.filter(nurse=>nurse.status==='active');const id=nurseId || available[index%available.length]?.id;if(id)setNurseId(String(id));setDate(new Date(Date.now()+(index+1)*86400000).toISOString().slice(0,10));return id ? 'Example filled from accessible records. Review before generating.' : 'Select an actual available record before generating.';}}))} />
         <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)', marginBottom: 24 }}>
           <div className="form-grid">
             <div className="form-group">

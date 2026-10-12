@@ -1,9 +1,13 @@
+import AIReport from '../components/AIReport';
+import NativeAIPresets from '../components/NativeAIPresets';
 import { useState, useEffect } from 'react';
 import { api } from '../api';
 import toast from 'react-hot-toast';
 import { Pill, Sparkles, AlertTriangle } from 'lucide-react';
 
 export default function AIMedicationCheck() {
+  const [medicationOrders, setMedicationOrders] = useState([]);
+  useEffect(() => { api.getOrders().then(data=>setMedicationOrders(Array.isArray(data)?data:data.data||[])).catch(()=>{}); }, []);
   const [patients, setPatients] = useState([]);
   const [patientId, setPatientId] = useState('');
   const [extraMeds, setExtraMeds] = useState('');
@@ -33,6 +37,7 @@ export default function AIMedicationCheck() {
         <div><h2>Medication Interaction Checker</h2><div className="page-header-sub">Cross-reference patient meds for interactions, duplications, contraindications</div></div>
       </div>
       <div className="page-body">
+        <NativeAIPresets disabled={loading} presets={['First available record','Next available record','Current record review'].map((label,index)=>({label,fill:()=>{const withMedicationOrders=patients.filter(patient=>medicationOrders.some(order=>String(order.patient_id)===String(patient.id)&&/medication|prescription|medicine/i.test(order.order_type||'')));const id=patientId || withMedicationOrders[index%withMedicationOrders.length]?.id || patients[index%patients.length]?.id;if(id)setPatientId(String(id));const actualMeds=medicationOrders.filter(order=>String(order.patient_id)===String(id)&&/medication|prescription|medicine/i.test(order.order_type||'')).map(order=>order.description).filter(Boolean);setExtraMeds(extraMeds || actualMeds.join('\n') || ['Acetaminophen','Ibuprofen','Cetirizine'][index] + ' (fictional additional-medication example; not a saved patient order; replace with verified medication details before checking)');return id ? (extraMeds || actualMeds.length ? 'Example filled from accessible records. Review before generating.' : 'All fields filled; additional medication is a clearly marked fictional example. Replace it with actual medication facts before checking.') : 'Select an actual available record before generating.';}}))} />
         <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)', marginBottom: 24 }}>
           <div className="form-group"><label>Patient</label>
             <select value={patientId} onChange={(e) => setPatientId(e.target.value)}>
@@ -48,6 +53,7 @@ export default function AIMedicationCheck() {
           </button>
         </div>
 
+        {result && <AIReport response={result} title="AI analysis report" />}
         {result && (
           <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)', marginBottom: 24 }}>
             <h3><Pill size={18} style={{ verticalAlign: 'middle', marginRight: 8 }} />Analysis ({result.total_meds_checked} meds)</h3>

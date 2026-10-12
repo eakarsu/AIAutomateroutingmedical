@@ -1,3 +1,5 @@
+import AIReport from '../components/AIReport';
+import NativeAIPresets from '../components/NativeAIPresets';
 import { useState, useEffect } from 'react';
 import { api } from '../api';
 import toast from 'react-hot-toast';
@@ -40,6 +42,7 @@ export default function AINoShowPredict() {
       </div>
 
       <div className="page-body">
+        <NativeAIPresets disabled={loading} presets={['First available record','Next available record','Current record review'].map((label,index)=>({label,fill:()=>{const id=visitId || visits[index%visits.length]?.id;if(id)setVisitId(String(id));return id ? 'Example filled from accessible records. Review before generating.' : 'Select an actual available record before generating.';}}))} />
         <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)', marginBottom: 24 }}>
           <div className="form-group">
             <label>Visit</label>
@@ -57,6 +60,7 @@ export default function AINoShowPredict() {
           </button>
         </div>
 
+        {result && <AIReport response={result} title="AI analysis report" />}
         {result && (
           <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)' }}>
             <h3>{result.patient}</h3>

@@ -26,6 +26,7 @@ export default function Login() {
   };
 
   const autoFill = () => {
+    if (!import.meta.env.VITE_DEMO_EMAIL || !import.meta.env.VITE_DEMO_PASSWORD) { toast.error('Demo credentials are unavailable.'); return; }
     setEmail(import.meta.env.VITE_DEMO_EMAIL || '');
     setPassword(import.meta.env.VITE_DEMO_PASSWORD || '');
   };
@@ -47,8 +48,8 @@ export default function Login() {
           <button type="submit" className="btn btn-primary login-btn" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
-          <button type="button" className="auto-fill-btn" onClick={autoFill}>
-            Auto Fill Demo Credentials
+          <button type="button" className="auto-fill-btn" onClick={autoFill} disabled={loading}>
+            Fill Demo Credentials
           </button>
         </form>
       </div>

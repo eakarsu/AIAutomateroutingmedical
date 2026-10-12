@@ -1,3 +1,4 @@
+import AIReport from '../components/AIReport';
 import { useState, useEffect } from 'react';
 import { api } from '../api';
 import Modal from '../components/Modal';
@@ -251,7 +252,7 @@ export default function AILogs() {
           <div style={{ marginTop: 16 }}>
             <div className="detail-label" style={{ marginBottom: 8 }}>Structured Data</div>
             <div style={{ padding: 12, background: 'var(--gray-50)', borderRadius: 'var(--radius-sm)', fontSize: 12, lineHeight: 1.6, fontFamily: 'monospace', maxHeight: 350, overflow: 'auto', whiteSpace: 'pre-wrap' }}>
-              {JSON.stringify(selected.structured_data, null, 2)}
+              <AIReport response={selected.structured_data} title="Saved structured result" />
             </div>
           </div>
         </Modal>

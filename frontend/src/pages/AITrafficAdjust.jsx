@@ -1,3 +1,5 @@
+import AIReport from '../components/AIReport';
+import NativeAIPresets from '../components/NativeAIPresets';
 import { useState, useEffect } from 'react';
 import { api } from '../api';
 import AIOutput from '../components/AIOutput';
@@ -28,6 +30,7 @@ export default function AITrafficAdjust() {
         <div><h2>Route Traffic Integration</h2><div className="page-header-sub">Real-time traffic adjustments to ETAs and stop ordering</div></div>
       </div>
       <div className="page-body">
+        <NativeAIPresets disabled={loading} presets={['First available record','Next available record','Current record review'].map((label,index)=>({label,fill:()=>{const id=routeId || routes[index%routes.length]?.id;if(id)setRouteId(String(id));return id ? 'Example filled from accessible records. Review before generating.' : 'Select an actual available record before generating.';}}))} />
         <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)', marginBottom: 24 }}>
           <div className="form-group">
             <label>Route</label>
@@ -41,6 +44,7 @@ export default function AITrafficAdjust() {
           </button>
         </div>
 
+        {result && <AIReport response={result} title="Traffic adjustment report" />}
         {result?.stops && (
           <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: 24, border: '1px solid var(--gray-200)', marginBottom: 24 }}>
             <h3 style={{ marginBottom: 12 }}><TrafficCone size={16} style={{ verticalAlign: 'middle', marginRight: 8 }} />Traffic-Adjusted Stops</h3>
