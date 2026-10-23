@@ -77,6 +77,10 @@ app.use('/api/dashboard', authenticate, dashboardRoutes);
 app.use('/api/visit-notes', authenticate, visitNotesRoutes);
 app.use('/api/analytics', authenticate, analyticsRoutes);
 app.use('/api/dispatch-cases', authenticate, dispatchCasesRoutes);
+import tasks26cRoutes from './routes/tasks26c.js';
+app.use('/api/tasks', authenticate, tasks26cRoutes.createTasksRouter({ getDb: (req) => req.app.locals.db }));
+import featureAi26cRoutes from './routes/featureAi26c.js';
+app.use('/api/feature-ai', authenticate, featureAi26cRoutes.createFeatureAiRouter({ loadRecords: async (req) => { const tenantFor=u=>String(u.tenant_id||u.agency_id||`legacy-user:${u.id}`); const r=await req.app.locals.db.query('SELECT * FROM dispatch_cases WHERE tenant_id=$1 ORDER BY updated_at DESC LIMIT 100',[tenantFor(req.user)]); return r.rows; } }));
 app.use('/api/runtime-ai', authenticate, runtimeAiRoutes);
 
 // Custom Views (4 routing-focused features) — mounted BEFORE app.listen

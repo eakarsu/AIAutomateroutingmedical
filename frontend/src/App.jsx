@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import FeaturePackPanel from './components/FeaturePackPanel';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Login from './pages/Login';
@@ -89,7 +90,8 @@ function ProtectedLayout() {
           <Route path="/integrations" element={<Integrations />} />
           <Route path="/custom-views" element={<CustomViewsPage />} />
           <Route path="/caregiver-credential-expiry" element={<CaregiverCredentialExpiry />} />
-          <Route path="*" element={<Navigate to="/dashboard" />} />
+          <Route path="/feature-pack" element={<FeaturePackPanel />} />
+        <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
       </main>
     </div>
